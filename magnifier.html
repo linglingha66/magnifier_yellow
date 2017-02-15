@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>放大镜特效</title>
+	<style>
+		 * {
+            margin: 0;
+            padding: 0
+        }
+
+        #wrap {
+            display: block;
+            width: 400px;
+            height: 400px;
+            margin: 5px;
+            position: relative;
+            border: 1px solid #ccc;
+        }
+        #float_box {
+            display: none;
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            background-color:blue;
+            filter: alpha(opacity=20);
+            opacity: 0.2;
+        }
+
+        #small_box {
+            position: absolute;
+            display: block;
+            width: 400px;
+            height: 400px;
+            cursor:move;
+        }
+		
+		#small_box img{
+			display: block;
+			width: 400px;
+			height:400px;
+		}
+
+        #big_box {
+            display:none;
+            position: absolute;
+            top: 0;
+            left: 420px;
+            width: 400px;
+            height: 400px;
+            overflow: hidden;
+        }
+
+        #big_box img {
+        	position: absolute;
+        	display: block;
+        	width: 800px;
+        	height: 800px;
+        }
+	</style>
+</head>
+<body>
+	<script>
+		window.onload = function(){
+			function getId(dom){
+				return document.getElementById(dom);
+			}
+			var wrap = getId('wrap');
+			var small_box = getId('small_box');
+			var big_box = getId('big_box');
+			var float_box = getId('float_box');
+			var big_pic = big_box.childNodes[1];
+
+			small_box.onmouseover = function(){
+				float_box.style.display = "block";
+				big_box.style.display = "block";
+			}
+			small_box.onmouseout = function(){
+				float_box.style.display = "none";
+				big_box.style.display = "none";
+			}
+			small_box.onmousemove = function(ev){
+				var event = ev||window.event;
+				//获取放大镜距离小图左侧和上方的距离
+				var left = event.clientX - wrap.offsetLeft - small_box.offsetLeft - float_box.offsetWidth/2;
+				var top = event.clientY - wrap.offsetTop - small_box.offsetTop - float_box.offsetHeight/2;
+				//边缘检测
+				if(left < 0){
+					left = 0;
+				}else if (left > (small_box.offsetWidth - float_box.offsetWidth)){
+					left = small_box.offsetWidth - float_box.offsetWidth;
+				}
+
+				if(top < 0){
+					top = 0;
+				}else if(top > (small_box.offsetHeight - float_box.offsetHeight)){
+					top = small_box.offsetHeight - float_box.offsetHeight;
+				}
+
+				float_box.style.left = left +"px";
+				float_box.style.top = top + "px";
+				//大图移动方向与鼠标移动方向相反
+				big_pic.style.left = -left * big_box.offsetWidth / float_box.offsetWidth + "px";
+				big_pic.style.top = -top * big_box.offsetHeight / float_box.offsetHeight + "px";
+			}
+		}
+		
+	</script>
+	<div id="wrap">
+		<div id="small_box">
+			<div id="float_box"></div>
+			<img src="small_pic.jpg"/>
+		</div>
+		<div id="big_box">
+			<img src="big_pic.jpg"/>
+		</div>
+	</div>
+</body>
+</html>
